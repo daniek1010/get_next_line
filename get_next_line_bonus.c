@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: danevans <danevans@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/18 14:07:40 by danevans          #+#    #+#             */
-/*   Updated: 2023/08/18 14:07:47 by danevans         ###   ########.fr       */
+/*   Created: 2023/08/18 12:34:43 by danevans          #+#    #+#             */
+/*   Updated: 2023/08/18 14:03:37 by danevans         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static char	*bytes_read(int fd, char *backup, char *buffer)
 {
@@ -24,7 +24,7 @@ static char	*bytes_read(int fd, char *backup, char *buffer)
 		if (!backup)
 			backup = ft_strdup("");
 		temp = backup;
-		backup = ft_strjoin(backup, buffer);
+		backup = ft_strjoin(temp, buffer);
 		free(temp);
 		if (ft_strchr(backup, '\n'))
 			break ;
@@ -95,7 +95,7 @@ char	*get_next_line(int fd)
 {
 	char		*line;
 	char		*buffer;
-	static char	*backup;
+	static char	*backup[OPEN_MAX + 1];
 
 	line = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0)
@@ -106,10 +106,10 @@ char	*get_next_line(int fd)
 		free (buffer);
 		return (NULL);
 	}
-	backup = bytes_read(fd, backup, buffer);
-	if (backup == NULL)
+	backup[fd] = bytes_read(fd, backup[fd], buffer);
+	if (backup[fd] == NULL)
 		return (NULL);
-	line = ft_line(backup);
-	backup = ft_update_backup(backup);
+	line = ft_line(backup[fd]);
+	backup[fd] = ft_update_backup(backup[fd]);
 	return (line);
 }
